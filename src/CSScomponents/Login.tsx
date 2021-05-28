@@ -84,7 +84,7 @@ export const LoginCSS = styled.div`
         background-color: #e0f3ff;
       }
 
-      @media screen and (max-width: 425px) {
+      @media all and (max-width: 600px) {
         .container {
             display: flex;
             height: 100vh;

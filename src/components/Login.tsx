@@ -1,11 +1,13 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { useForm } from 'react-hook-form'
 import { LoginCSS } from '../CSScomponents/Login'
 import { useMutation } from '@apollo/client'
 import { LOGIN } from '../apollo/mututaion'
 import { User, SigninArgs } from '../types'
 import { AuthContext } from '../context/AuthProvider'
-import { useHistory } from 'react-router-dom'
+import { Redirect, useHistory } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import { loggeduser, getUser } from '../reducers/userReducer'
 
 type FormData = {
     username: string;
@@ -14,7 +16,7 @@ type FormData = {
 
 export default function Login() {
 
-    const { loggedUser, setAuthUser } = useContext(AuthContext)
+    // const { loggedUser, setAuthUser } = useContext(AuthContext)
 
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
 
@@ -22,17 +24,9 @@ export default function Login() {
 
     const history = useHistory()
 
-    useEffect(() => {
+    const user = useSelector(getUser)
 
-        try {
-            if (loggedUser) {
-                history.push('/')
-            }
-
-        } catch (error) {
-            console.log(error)
-        }
-    }, [loggedUser])
+    const dispatch = useDispatch()
 
     const onSubmit = handleSubmit(async ({ username, password }) => {
         try {
@@ -47,7 +41,7 @@ export default function Login() {
 
                 const login = res.data.login
 
-                setAuthUser(login)
+                dispatch(loggeduser(login))
 
                 history.push('/')
             }
@@ -58,7 +52,7 @@ export default function Login() {
 
     return (
         <LoginCSS>
-            {!loggedUser &&
+            {!user ?
                 <div>
 
                     <div className="container">
@@ -102,7 +96,7 @@ export default function Login() {
                         </form>
                     </div>
 
-                </div>}
+                </div> : <Redirect to="/" />}
         </LoginCSS >
     )
 }

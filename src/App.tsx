@@ -5,15 +5,17 @@ import Layout from './components/Layout'
 import { BrowserRouter } from 'react-router-dom'
 import './App.css'
 import AuthProvider from './context/AuthProvider'
+import {Provider} from 'react-redux'
+import store from './store'
 
 function App() {
   return (
     <ApolloProvider client={client}>
-      <AuthProvider>
+      <Provider store={store}>
         <BrowserRouter>
           <Layout />
         </BrowserRouter>
-      </AuthProvider>
+      </Provider>
     </ApolloProvider>
   );
 }

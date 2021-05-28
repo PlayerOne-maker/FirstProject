@@ -9,5 +9,12 @@ mutation login($password : String!,$username: String!){
         email
     }
   }
+`
 
+export const LOGOUT = gql`
+mutation{
+  logout{
+    message
+  }
+}
 `
