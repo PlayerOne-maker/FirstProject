@@ -4,7 +4,6 @@ import { client } from './apollo/client'
 import Layout from './components/Layout'
 import { BrowserRouter } from 'react-router-dom'
 import './App.css'
-import AuthProvider from './context/AuthProvider'
 import {Provider} from 'react-redux'
 import store from './store'
 

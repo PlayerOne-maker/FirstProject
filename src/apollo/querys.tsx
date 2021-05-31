@@ -9,6 +9,7 @@ query{
       lastname
       role
       level
+      email
       department{
         id
         name
