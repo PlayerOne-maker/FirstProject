@@ -7,42 +7,44 @@ import Calendar from './Calendar'
 
 export default function Home() {
 
-    const loggedUser = useSelector(getUser)
+    const logged = useSelector(getUser)
+
+    console.log(logged)
 
     return (
         <div>
-            {loggedUser ?
-            <>
-                <HomeCSS>
-                    <div className="container">
-                        <div className="left-panel">
-                            <div className="title">
-                                Personal
+            {logged ?
+                <>
+                    <HomeCSS>
+                        <div className="container">
+                            <div className="left-panel">
+                                <div className="title">
+                                    Personal
+                                </div>
+                                <div className="content">
+                                    <div> Name : {logged.firstname} {logged.lastname}</div>
+                                    <div> Email : {logged.email}</div>
+                                    <div>Password : <button>Chenge password</button> </div>
+                                    <div>Department : {logged.department.name} </div>
+                                </div>
                             </div>
-                            <div className="content">
-                                <div> Name : {loggedUser.me.firstname} {loggedUser.me.lastname}</div>
-                                <div> Email : {loggedUser.me.email}</div>
-                                <div>Password : <button>Chenge password</button> </div>
-                                <div>Department : {loggedUser.me.department.name} </div>
+                            <div className="right-panel">
+                                <div className="title">
+                                    Remaining leave
+                                </div>
+                                <div className="content">
+                                    <div> Sick Leave : 30 Day</div>
+                                    <div> Annual Leave : 7 Day</div>
+                                    <div> Presonal Leave : 30 Day</div>
+                                </div>
                             </div>
-                        </div>
-                        <div className="right-panel">
-                            <div className="title">
-                                Remaining leave
-                            </div>
-                            <div className="content">
-                                <div> Sick Leave : 30 Day</div>
-                                <div> Annual Leave : 30 Day</div>
-                                <div> Presonal Leave : 30 Day</div>
-                            </div>
-                        </div>
 
-                    </div>
-                    <div className="calendar">
-                        
-                    </div>
-                </HomeCSS>
-                <Calendar />
+                        </div>
+                        <div className="calendar">
+                            <Calendar />
+                        </div>
+                    </HomeCSS>
+
                 </>
                 : <Redirect to="/Login" />}
         </div>

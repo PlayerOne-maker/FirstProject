@@ -6,7 +6,10 @@ mutation login($password : String!,$username: String!){
       username
       firstname
       lastname
-        email
+      email
+      department{
+        name
+      }
     }
   }
 `

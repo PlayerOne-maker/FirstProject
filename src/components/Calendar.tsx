@@ -18,23 +18,40 @@ export default function Calendar() {
         setAction('close')
     }
 
+    function Ctrlwindows(e : any) {
+        if(e.target.className === 'modal'){
+            setAction('close')
+        }
+      }
+      
     return (
         <>
 
             <ModalCSS>
-                <div className={action === 'leave' ? 'modal' : 'modal-close'}>
-                    <div className="modal-content">
+                <div onClick={Ctrlwindows} className={action === 'leave' ? 'modal' : 'modal-close'}>
+                    <div  className="modal-content">
+
                         <span className="close" onClick={CtrlOut}>&times;</span>
-                        <p>ตั้งแต่</p>
-                        <p>{start}</p>
-                        <p>ถึง</p>
-                        <p>{end}</p>
-                        <select name="type-leave" id="cars">
-                            <option value="sick">sick leave</option>
-                            <option value="annual">annual leave</option>
-                            <option value="presonal">presonal leave</option>
-                        </select>
-                        <button></button>
+
+                        <div className="content">
+                            <div>From</div>
+                            <div>{start}</div>
+                        </div>
+                        <div className="content">
+                            <div>To</div>
+                            <div>{end}</div>
+                        </div>
+                        <div className="content">
+                            <div>Type Leave</div>
+                            <select className="Selection" name="type-leave" id="cars">
+                                <option value="sick">sick leave</option>
+                                <option value="annual">annual leave</option>
+                                <option value="presonal">presonal leave</option>
+                            </select>
+                        </div>
+                        <div className="content">
+                            <button>Summit</button>
+                        </div>
                     </div>
                 </div>
             </ModalCSS>
@@ -48,18 +65,11 @@ export default function Calendar() {
                 select={(info) => {
                     var endDay = info.end
                     endDay.setDate(endDay.getDate() - 1)
-                    var end = formatDate(endDay, {
-                        month: '2-digit',
-                        year: 'numeric',
-                        day: '2-digit'
-                    })
 
-                    var start = formatDate(info.start, {
-                        month: '2-digit',
-                        year: 'numeric',
-                        day: '2-digit'
-                    })
-
+                    var start = new Intl.DateTimeFormat('en-GB').format(info.start);
+                    
+                    var end = new Intl.DateTimeFormat('en-GB').format(endDay);
+                    
                     // var totelCount = 3
 
                     // var countLeave = new Date(info.start)
@@ -132,12 +142,12 @@ export default function Calendar() {
                     {
                         title: 'Presonal Leave',
                         start: '2021-06-01',
-                        end: '2021-06-03',
+                        end: '2021-06-05',
                         description: 'Leave',
                         backgroundColor: 'green',
                         extendedProps: {
-                            from: '2021-06-01 13:00 - 17.30',
-                            to: '2021-06-02 Allday'
+                            from: '2021-06-01 Allday',
+                            to: '2021-06-02 13:00 - 17.30'
                         }
                     },
                 ]}

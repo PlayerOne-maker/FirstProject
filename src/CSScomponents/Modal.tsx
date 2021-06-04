@@ -3,7 +3,7 @@ import styled from 'styled-components'
 export const ModalCSS = styled.div`
 .modal {
     position: fixed; /* Stay in place */
-    z-index: 11; /* Sit on top */
+    z-index: 2; /* Sit on top */
     padding-top: 100px; /* Location of the box */
     left: 0;
     top: 0;
@@ -21,26 +21,74 @@ export const ModalCSS = styled.div`
   
   /* Modal Content */
   .modal-content {
+    border-radius: 10px;
     background-color: #fefefe;
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
     width: 30%;
   }
+
+  .modal-content .content{
+    display: flex;
+    justify-content: center;
+  }
   
+  .modal-content .content .Selection{
+    width: 50%;
+  }
+
+  .modal-content .content button{
+    width: 50%;
+    color: white;
+    border: none;
+    font-size: 20px;
+    padding: 5px;
+    width: 200px;
+    border-radius: 10px;
+    background-color: #268AFF;
+    transition: all 0.5s;
+    cursor: pointer;
+  }
+
+  .modal-content .content button:hover{
+    background-color: #4eb7d9;
+  }
+  
+  .modal-content .content div{
+    width: 50%
+  }
+
   /* The Close Button */
   .close {
-    color: #aaaaaa;
+    color: white;
     float: right;
     font-size: 28px;
     font-weight: bold;
+    position: absolute;
+    top: 85px;
+    right: 34.3%;
+    width: 30px;
+    text-align:center;
+    border-radius: 25px;
+    background-color: #268AFF;
   }
   
   .close:hover,
   .close:focus {
-    color: #000;
     text-decoration: none;
     cursor: pointer;
+    background-color: #4eb7d9;
+  }
+
+  @media all and (max-width: 600px) {
+    .modal-content {
+      width: 80%;
+    }
+
+    .close { 
+      right: 7%;
+    }
   }
 `
 

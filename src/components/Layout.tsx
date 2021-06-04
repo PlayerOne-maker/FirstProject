@@ -36,8 +36,8 @@ const Layout: React.FC<Props> = () => {
 
             const res = data
 
-            if (res) {
-                dispatch(loggeduser(res))
+            if (res.me) {
+                dispatch(loggeduser(res.me))
             }
 
         } catch (error) {
