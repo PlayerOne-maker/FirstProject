@@ -15,28 +15,70 @@ type Departments {
   name: String!
 }
 
+"""Leave"""
+type Leave {
+  count: Float!
+  createAt: DateTime!
+  id: ID!
+  typeleave: Typeleave!
+  user: User!
+}
+
 type Mutation {
+  addleave(count: Float!, typeleaveId: String!, userId: String!): Leave
+  addtypeleave(max: Float!, name: String!): ResMessage
   createDepartment(name: String!): Departments
   createUser(departmentId: String!, email: String!, firstname: String!, lastname: String!, level: String!, password: String!, username: String!): User
   deleteDepartment(departmentId: String!): ResMessage
   deleteUser(userId: String!): ResMessage
+  deleteleave(id: String!): ResMessage
+  deletetypeleave(id: String!): ResMessage
   login(password: String!, username: String!): User
   logout: ResMessage
+  requestleave(descriptionfrom: String!, descriptionto: String!, from: DateTime!, to: DateTime!, typeleaveId: String!): RequsetLeave
   requestresetpassword(email: String!): ResMessage
   resetpassword(password: String!, token: String!): ResMessage
+  submitleaveByhr(Status: String!, id: String!): RequsetLeave
+  submitleaveByleader(Status: String!, id: String!): RequsetLeave
   updateDepartment(departmentId: String!, name: String!): Departments
   updateRole(newRole: [String!]!, userId: String!): User
   updateUser(departmentId: String!, email: String!, fisrtname: String!, lastname: String!, level: String!, userId: String!, username: String!): User
+  updatetypeleave(id: String!, max: Float!, name: String!): Typeleave
 }
 
 type Query {
   departments: [Departments]!
   me: User
+  typeleave: [Typeleave]!
   users: [User]!
+}
+
+"""RequsetLeave"""
+type RequsetLeave {
+  createAt: DateTime!
+  descriptionfrom: String!
+  descriptionto: String!
+  from: DateTime!
+  hr: String!
+  hrBy: User!
+  id: ID!
+  leader: String!
+  leaderBy: User!
+  to: DateTime!
+  typeleave: Typeleave!
+  user: User!
 }
 
 type ResMessage {
   message: String!
+}
+
+"""TypeLeave"""
+type Typeleave {
+  createAt: DateTime!
+  id: ID!
+  max: Float!
+  name: String!
 }
 
 """UserModel"""

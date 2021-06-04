@@ -13,6 +13,13 @@ export enum LevelOptions{
 }
 
 
+export enum StatusOption{
+    appove = 'APPOVE',
+    reject = 'REJECT',
+    panding = 'PANDING'
+}
+
+
 export interface AppRequest extends Request {
     userId? : string
     tokenVersion? : number

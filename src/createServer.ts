@@ -4,11 +4,11 @@ import { UserModel } from './entities/User'
 import { AuthResolvers } from './resolvers/authresolvers'
 import { AppContext } from './types'
 import { createToken, sendToken, verifyToken } from './utils/token'
-
+import {leaveresolver} from './resolvers/leaveresolver'
 
 export default async () => {
     const schema = await buildSchema({
-        resolvers: [AuthResolvers],
+        resolvers: [AuthResolvers,leaveresolver],
         emitSchemaFile: { path: './src/schema.graphql' },
         validate: false,
     })

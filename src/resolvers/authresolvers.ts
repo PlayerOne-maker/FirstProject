@@ -26,8 +26,6 @@ export class AuthResolvers {
 
             const user = await isAuth(req)
 
-
-
             if (!(user.role.includes(RoleOptions.admin) || user.role.includes(RoleOptions.superadmin))) throw Error("You are not permission!!!")
 
             const AllUser = await UserModel.find().populate({ path: 'department' })

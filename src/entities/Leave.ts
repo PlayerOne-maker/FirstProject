@@ -4,31 +4,29 @@ import { Field, ID, ObjectType } from 'type-graphql'
 
 import { User } from './User'
 
+import {Typeleave} from './Typeleave'
+
 @ObjectType({description:'Leave'})
 export class Leave{
 
     @Field(() => ID)
     id:string
 
-    @Field()
-    @Prop()
-    personal_leave : number 
+    @Field(() => Typeleave)
+    @Prop({ref: 'Typeleave',type: mongoose.Schema.Types.ObjectId})
+    typeleave : Ref<Typeleave>
 
     @Field()
-    @Prop()
-    sick_leave : number
-
-    @Field()
-    @Prop()
-    annual_leave : number
-
-    @Field()
-    @Prop()
-    other_leave : number
+    @Prop({require: true})
+    count : number
 
     @Field(() => User)
-    @Prop({ref: 'user',type: mongoose.Schema.Types.ObjectId})
-    User : Ref<User>
+    @Prop({ref: 'User',type: mongoose.Schema.Types.ObjectId})
+    user : Ref<User>
+
+    @Field()
+    @Prop({default: Date.now() + 60 * 60 * 1000 * 7 })
+    createAt: Date
 }
 
 export const LeaveModel = getModelForClass(Leave)
