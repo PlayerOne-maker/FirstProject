@@ -2,14 +2,23 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { getUser } from '../reducers/userReducer'
-import { HomeCSS } from '../CSScomponents/Home'
 import Calendar from './Calendar'
+import { useQuery } from '@apollo/client'
+import { SHOWLEAVEREMAIN } from '../apollo/querys'
+import Tableuser from './Tableuser'
+
+// type
+import { Leaveremain } from '../types'
+
+// CSS
+import { HomeCSS } from '../CSScomponents/Home'
+
 
 export default function Home() {
 
     const logged = useSelector(getUser)
 
-    console.log(logged)
+    const { data } = useQuery<{ showleaveremain: Leaveremain[] }>(SHOWLEAVEREMAIN, { fetchPolicy: "no-cache" })
 
     return (
         <div>
@@ -33,15 +42,21 @@ export default function Home() {
                                     Remaining leave
                                 </div>
                                 <div className="content">
-                                    <div> Sick Leave : 30 Day</div>
-                                    <div> Annual Leave : 7 Day</div>
-                                    <div> Presonal Leave : 30 Day</div>
+                                    {data &&
+                                        data.showleaveremain.map((remain) => (
+                                            <div>{remain.typeleave.name} : {remain.count}</div>
+                                        ))
+                                    }
                                 </div>
                             </div>
 
                         </div>
                         <div className="calendar">
                             <Calendar />
+                        </div>
+
+                        <div className="table">
+                            <Tableuser />
                         </div>
                     </HomeCSS>
 

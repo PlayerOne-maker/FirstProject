@@ -18,3 +18,48 @@ query{
     }
   }
 `
+
+export const SHOWLEAVEREMAIN = gql`
+query{
+  showleaveremain
+  {
+    typeleave{
+      name
+    }
+    count
+  }
+}
+`
+
+export const TYPELEAVE = gql`
+query{
+  typeleave{
+    id
+    name
+    createAt
+    max
+  }
+}
+`
+
+export const SHOWREQUIEDLEAVE = gql`
+{
+  showrequiedleave{
+    id
+    from
+    descriptionfrom
+    to
+    descriptionto
+    leader
+    leaderBy{
+      username
+    }
+    hr
+    hrBy{
+      username
+    }
+    descriptionleave
+    createAt
+  }
+}
+`

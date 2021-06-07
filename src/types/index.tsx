@@ -19,4 +19,29 @@ export interface User {
     createAt: string
 }
 
+export interface typeleave {
+    id: string
+    name: string
+    max: number
+}
+
+export interface Leaveremain {
+    id: string
+    typeleave : typeleave
+    count: number
+}
+
+export interface showrequiedleave {
+    id: string
+    from : Date
+    to: Date
+    descriptionfrom: string
+    descriptionto: string
+    descriptionleave: string
+    leader: string
+    leaderBy: User
+    hr: string
+    hrBy: User
+}
+
 export type SigninArgs = Pick<User,'username'> & {password: string}

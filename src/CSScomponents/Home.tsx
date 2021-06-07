@@ -52,6 +52,13 @@ export const HomeCSS = style.div`
 .calendar{
     width: 80%;
     margin: auto;
+    margin-bottom: 20px;
+}
+
+.table{
+    
+    width: 90%;
+    margin: auto;
     
 }
 `

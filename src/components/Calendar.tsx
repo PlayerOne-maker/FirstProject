@@ -3,6 +3,9 @@ import FullCalendar, { formatDate } from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { ModalCSS } from '../CSScomponents/Modal'
+import { useQuery } from '@apollo/client'
+import { TYPELEAVE } from '../apollo/querys'
+import { typeleave } from '../types'
 
 export default function Calendar() {
 
@@ -18,18 +21,20 @@ export default function Calendar() {
         setAction('close')
     }
 
-    function Ctrlwindows(e : any) {
-        if(e.target.className === 'modal'){
+    function Ctrlwindows(e: any) {
+        if (e.target.className === 'modal') {
             setAction('close')
         }
-      }
-      
+    }
+
+    const { data } = useQuery<{ typeleave: typeleave[] }>(TYPELEAVE)
+
     return (
         <>
 
             <ModalCSS>
                 <div onClick={Ctrlwindows} className={action === 'leave' ? 'modal' : 'modal-close'}>
-                    <div  className="modal-content">
+                    <div className="modal-content">
 
                         <span className="close" onClick={CtrlOut}>&times;</span>
 
@@ -44,9 +49,9 @@ export default function Calendar() {
                         <div className="content">
                             <div>Type Leave</div>
                             <select className="Selection" name="type-leave" id="cars">
-                                <option value="sick">sick leave</option>
-                                <option value="annual">annual leave</option>
-                                <option value="presonal">presonal leave</option>
+                                {data && data.typeleave.map((types) => (
+                                    <option value={types.id}>{types.name}</option>
+                                ))}
                             </select>
                         </div>
                         <div className="content">
@@ -67,9 +72,9 @@ export default function Calendar() {
                     endDay.setDate(endDay.getDate() - 1)
 
                     var start = new Intl.DateTimeFormat('en-GB').format(info.start);
-                    
+
                     var end = new Intl.DateTimeFormat('en-GB').format(endDay);
-                    
+
                     // var totelCount = 3
 
                     // var countLeave = new Date(info.start)
