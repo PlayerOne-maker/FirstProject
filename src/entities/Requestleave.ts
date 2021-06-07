@@ -25,6 +25,11 @@ export class RequsetLeave{
     @prop({require: true})
     descriptionto: String
 
+
+    @Field()
+    @prop({require: true ,trim: true}) 
+    descriptionleave: String
+
     @Field(() => String)
     @prop({
         type:String,
@@ -34,7 +39,7 @@ export class RequsetLeave{
     })
     leader: StatusOption
 
-    @Field(() => User)
+    @Field(() => User, { nullable: true })
     @prop({ref: 'User',type: mongoose.Schema.Types.ObjectId})
     leaderBy : Ref<User>
 
@@ -47,9 +52,9 @@ export class RequsetLeave{
     })
     hr: StatusOption
 
-    @Field(() => User)
+    @Field(() => User, { nullable: true })
     @prop({ref: 'User',type: mongoose.Schema.Types.ObjectId})
-    hrBy : Ref<User>
+    hrBy : Ref<User> 
 
     @Field(() => User)
     @prop({ref: 'User',type: mongoose.Schema.Types.ObjectId})
@@ -58,6 +63,8 @@ export class RequsetLeave{
     @Field(() => Typeleave)
     @prop({ref: 'Typeleave',type: mongoose.Schema.Types.ObjectId})
     typeleave : Ref<Typeleave>
+
+
 
     @Field()
     @prop({default: Date.now() + 60 * 60 * 1000 * 7})

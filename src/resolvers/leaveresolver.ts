@@ -30,6 +30,67 @@ export class leaveresolver {
         }
     }
 
+
+    // show leave remain
+    @Query(() => [Leave], { nullable: 'items' })
+    async showleaveremain(
+        @Ctx() { req }: AppContext
+    ): Promise<Leave[] | null> {
+        try {
+            const user = isAuth(req)
+
+            if (!user) throw Error("You must Login")
+
+            const leave = await LeaveModel.find({ "user": Object(req.userId) }).populate({ path: ('user') }).populate({ path: ('typeleave') })
+
+            return leave
+
+        } catch (error) {
+            throw error
+        }
+    }
+
+    @Query(() => [RequsetLeave], { nullable: 'items' })
+    async showrequiedleave(
+        @Ctx() { req }: AppContext
+    ): Promise<RequsetLeave[] | null> {
+        try {
+            const user = await isAuth(req)
+
+            if (!user) throw Error("You must Login")
+
+            const department = await DepartmentModel.findById(user.department)
+
+            if (!department) throw Error("Not found department")
+
+            if (user?.level.includes(LevelOptions.midlevel)) {
+                const staff = await UserModel.findOne({ "department": Object(department.id), "level": LevelOptions.operationlevel })
+
+                const requestLeave = await RequsetLeaveModel.find({ "user": Object(staff) })
+                    .populate({ path: ('leaderBy') }).populate({ path: ('hrBy') })
+
+                return requestLeave
+            }
+
+            if (user?.level.includes(LevelOptions.toplevel)) {
+                const staff = await UserModel.findOne({ "department": Object(department.id), "level": LevelOptions.midlevel })
+
+                const requestLeave = await RequsetLeaveModel.find({ "user": Object(staff) })
+                    .populate({ path: ('leaderBy') }).populate({ path: ('hrBy') })
+
+                return requestLeave
+            } else {
+                return null
+            }
+
+
+
+        } catch (error) {
+            throw error
+        }
+    }
+
+    // เพิ่มประเภทลา
     @Mutation(() => ResMessage, { nullable: true })
     async addtypeleave(
         @Arg('name') name: string,
@@ -217,6 +278,7 @@ export class leaveresolver {
         @Arg('descriptionfrom') descriptionfrom: string,
         @Arg('descriptionto') descriptionto: string,
         @Arg('typeleaveId') typeleaveId: string,
+        @Arg('descriptionleave') descriptionleave: string,
         @Ctx() { req }: AppContext,
     ): Promise<RequsetLeave | null> {
         try {
@@ -225,16 +287,12 @@ export class leaveresolver {
 
             if (!check_user) throw Error("User not found")
 
-            const check_type = await TypeleaveModel.findById(typeleaveId)
-
-            if (!check_type) throw Error("Type not found")
-
             const Different = (to.getTime() - from.getTime()) / (1000 * 3600 * 24)
 
-            const findIndexLeave = await LeaveModel.findOne({ "user": Object(check_user.id) })
+            const findIndexLeave = await LeaveModel.findOne({ "user": Object(check_user.id), "typeleave": Object(typeleaveId) })
                 .populate({ path: 'typeleave' }).populate({ path: 'user' })
 
-            if (!findIndexLeave) throw Error("Not Found.")
+            if (!findIndexLeave) throw Error("Someting went wrong")
 
             findIndexLeave.count = findIndexLeave.count - Different
 
@@ -243,10 +301,11 @@ export class leaveresolver {
             const requsetleave = RequsetLeaveModel.create({
                 descriptionfrom,
                 descriptionto,
-                typeleave: check_type,
+                typeleave: findIndexLeave.typeleave,
                 user: check_user,
                 from,
-                to
+                to,
+                descriptionleave,
             })
 
             return requsetleave
@@ -280,15 +339,30 @@ export class leaveresolver {
 
             if (check_User_department?.id !== check_User_leave_department?.id) throw Error("can't appove")
 
-            if(check_user?.level.includes(LevelOptions.midlevel)){
-                if(!check_user_leave?.level.includes(LevelOptions.operationlevel)) throw Error("You can't appove because diferent Leave")
-            }
-    
-            if(check_user?.level.includes(LevelOptions.toplevel)){
-                if(!check_user_leave?.level.includes(LevelOptions.midlevel)) throw Error("You can't appove because diferent Leave")
+            if (check_user?.level.includes(LevelOptions.midlevel)) {
+                if (!check_user_leave?.level.includes(LevelOptions.operationlevel)) throw Error("You can't appove because diferent Leave")
             }
 
-            if(check_leave.leader.includes(StatusOption.appove) || check_leave.leader.includes(StatusOption.reject) ) throw Error("You can't submit again")
+            if (check_user?.level.includes(LevelOptions.toplevel)) {
+                if (!check_user_leave?.level.includes(LevelOptions.midlevel)) throw Error("You can't appove because diferent Leave")
+            }
+
+            if (check_leave.leader.includes(StatusOption.appove) || check_leave.leader.includes(StatusOption.reject)) throw Error("You can't submit again")
+
+            if (Status === StatusOption.reject) {
+                const Different = (check_leave.to.getTime() - check_leave.from.getTime()) / (1000 * 3600 * 24)
+
+                const leave = await LeaveModel.findOne({
+                    "typeleave": check_leave.typeleave,
+                    "user": check_leave.user
+                })
+
+                if(!leave) throw Error("someting went wrong!!!")
+
+                leave.count = leave.count + Different
+
+                await leave.save()
+            }
 
             check_leave.leader = Status
 
@@ -315,17 +389,34 @@ export class leaveresolver {
 
             if (!check_user) throw Error("User not found")
 
-            const check_dapartment = await DepartmentModel.findOne({name:'HR'})
+            const check_dapartment = await DepartmentModel.findOne({ name: 'HR' })
 
             const check_User_department = await DepartmentModel.findById(check_user.department)
 
-            if(check_User_department?.id !== check_dapartment?.id) throw Error ("You not have permission")
+            if (check_User_department?.id !== check_dapartment?.id) throw Error("You not have permission")
 
-            const check_leave = await RequsetLeaveModel.findById(id).populate({path: 'user'}).populate({path: 'leaderBy'})
+            const check_leave = await RequsetLeaveModel.findById(id).populate({ path: 'user' }).populate({ path: 'leaderBy' })
 
             if (!check_leave) throw Error("Not Found")
 
-            if(check_leave.hr.includes(StatusOption.appove) || check_leave.hr.includes(StatusOption.reject) ) throw Error("You can't submit again")
+            if(check_leave.leader === StatusOption.panding) throw Error ("You can't Appove.")
+
+            if (check_leave.hr.includes(StatusOption.appove) || check_leave.hr.includes(StatusOption.reject)) throw Error("You can't submit again")
+
+            if (Status === StatusOption.reject) {
+                const Different = (check_leave.to.getTime() - check_leave.from.getTime()) / (1000 * 3600 * 24)
+
+                const leave = await LeaveModel.findOne({
+                    "typeleave": check_leave.typeleave,
+                    "user": check_leave.user
+                })
+
+                if(!leave) throw Error("someting went wrong!!!")
+
+                leave.count = leave.count + Different
+
+                await leave.save()
+            }
 
             check_leave.hr = Status
 

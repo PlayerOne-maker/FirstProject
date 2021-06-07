@@ -35,7 +35,7 @@ type Mutation {
   deletetypeleave(id: String!): ResMessage
   login(password: String!, username: String!): User
   logout: ResMessage
-  requestleave(descriptionfrom: String!, descriptionto: String!, from: DateTime!, to: DateTime!, typeleaveId: String!): RequsetLeave
+  requestleave(descriptionfrom: String!, descriptionleave: String!, descriptionto: String!, from: DateTime!, to: DateTime!, typeleaveId: String!): RequsetLeave
   requestresetpassword(email: String!): ResMessage
   resetpassword(password: String!, token: String!): ResMessage
   submitleaveByhr(Status: String!, id: String!): RequsetLeave
@@ -49,6 +49,8 @@ type Mutation {
 type Query {
   departments: [Departments]!
   me: User
+  showleaveremain: [Leave]!
+  showrequiedleave: [RequsetLeave]!
   typeleave: [Typeleave]!
   users: [User]!
 }
@@ -57,13 +59,14 @@ type Query {
 type RequsetLeave {
   createAt: DateTime!
   descriptionfrom: String!
+  descriptionleave: String!
   descriptionto: String!
   from: DateTime!
   hr: String!
-  hrBy: User!
+  hrBy: User
   id: ID!
   leader: String!
-  leaderBy: User!
+  leaderBy: User
   to: DateTime!
   typeleave: Typeleave!
   user: User!
