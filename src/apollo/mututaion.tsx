@@ -21,3 +21,38 @@ mutation{
   }
 }
 `
+
+export const REQUESTLEAVE = gql`
+mutation requestleave(
+  $typeleaveId : String!,
+  $to: Date!,
+  $from: Date!,
+  $descriptionfrom: String!,
+  $descriptionto: String!,
+  $descriptionleave: String!
+  ){
+  requestleave(
+    typeleaveId:$typeleaveId
+    to:$to
+  	from:$from
+    descriptionfrom:$descriptionfrom
+  	descriptionto:$descriptionto
+  	descriptionleave:$descriptionleave){
+    leader
+    hr
+    typeleave{
+      name
+    }
+    user{
+      username
+      department{
+        name
+      }
+    }
+    id
+    from
+    descriptionfrom
+    to
+    descriptionto
+  }
+}`

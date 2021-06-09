@@ -23,6 +23,7 @@ export const SHOWLEAVEREMAIN = gql`
 query{
   showleaveremain
   {
+    id
     typeleave{
       name
     }
@@ -38,6 +39,7 @@ query{
     name
     createAt
     max
+    color
   }
 }
 `
@@ -60,6 +62,49 @@ export const SHOWREQUIEDLEAVE = gql`
     }
     descriptionleave
     createAt
+  }
+}
+`
+
+export const SHOWREQUESTLEAVEME = gql`
+{
+  showrequiedleaveMe{
+    from
+    to
+    descriptionto
+    descriptionfrom
+    descriptionleave
+    id
+    leader
+    leaderBy{
+      username
+    }
+    hr
+    hrBy{
+      username
+    }
+    createAt
+  }
+}`
+
+export const CALENDARLEAVE = gql`
+query{
+  calendarLeave{
+    id
+    to
+    from
+    descriptionto
+    descriptionfrom
+    typeleave{
+      name
+      color
+    }
+    leaderBy{
+      username
+    }
+    hrBy{
+      username
+    }
   }
 }
 `

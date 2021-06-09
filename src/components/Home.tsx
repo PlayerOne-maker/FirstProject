@@ -3,23 +3,15 @@ import { Redirect } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { getUser } from '../reducers/userReducer'
 import Calendar from './Calendar'
-import { useQuery } from '@apollo/client'
-import { SHOWLEAVEREMAIN } from '../apollo/querys'
 import Tableuser from './Tableuser'
-
-// type
-import { Leaveremain } from '../types'
-
-// CSS
 import { HomeCSS } from '../CSScomponents/Home'
-
+import Remain from './Leaveremain'
 
 export default function Home() {
 
     const logged = useSelector(getUser)
 
-    const { data } = useQuery<{ showleaveremain: Leaveremain[] }>(SHOWLEAVEREMAIN, { fetchPolicy: "no-cache" })
-
+    
     return (
         <div>
             {logged ?
@@ -42,11 +34,7 @@ export default function Home() {
                                     Remaining leave
                                 </div>
                                 <div className="content">
-                                    {data &&
-                                        data.showleaveremain.map((remain) => (
-                                            <div>{remain.typeleave.name} : {remain.count}</div>
-                                        ))
-                                    }
+                                    <Remain />
                                 </div>
                             </div>
 
@@ -54,11 +42,9 @@ export default function Home() {
                         <div className="calendar">
                             <Calendar />
                         </div>
-
-                        <div className="table">
-                            <Tableuser />
-                        </div>
                     </HomeCSS>
+
+                    <Tableuser />
 
                 </>
                 : <Redirect to="/Login" />}

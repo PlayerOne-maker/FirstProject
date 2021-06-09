@@ -1,131 +1,58 @@
 import { useQuery } from '@apollo/client'
-import React from 'react'
-import { SHOWREQUIEDLEAVE } from '../apollo/querys'
+import React, { forwardRef } from 'react'
+import { SHOWREQUESTLEAVEME } from '../apollo/querys'
 import { TableuserCSS } from '../CSScomponents/Tableuser'
-import { showrequiedleave } from '../types'
-import { Column, useTable } from 'react-table';
+import { showrequestleave } from '../types'
+import MaterialTable from 'material-table'
+import Search from '@material-ui/icons/Search';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 
 export default function Tableuser() {
 
-    const Query = useQuery<{ showrequiedleave: showrequiedleave[] }>(SHOWREQUIEDLEAVE)
+  const { data } = useQuery(SHOWREQUESTLEAVEME)
 
 
-    interface ExampleObject {
-        col1: string
-        col2: string
-    }
+  return (
+    <TableuserCSS>
+      <div className="table">
+        <MaterialTable
+          columns={[
+            { title: 'Requested date', field: 'at' },
+            { title: 'From', field: 'from', type: "date" },
+            { title: 'To', field: 'to', type: "date" },
+            { title: 'Desciption', field: 'dec', type: "string" },
+            { title: 'Appove', field: 'leader' },
+            { title: 'Byleader', field: 'leaderby' },
+            { title: 'Appove', field: 'hr' },
+            { title: 'ByHr', field: 'hrby' },
+          ]}
+          data={data && data?.showrequiedleaveMe.map((request: showrequestleave) => ({
+            at: new Date(request.createAt).toLocaleDateString('en-GB'),
+            from: new Date(request.from).toLocaleDateString('en-GB') + ' ' + request.descriptionfrom,
+            to: new Date(request.to).toLocaleDateString('en-GB') + ' ' + request.descriptionto,
+            dec: request.descriptionleave,
+            leader: request.leader === 'APPOVE' ? <FontAwesomeIcon icon={faCheckCircle} color="green" size="lg" />
+              : request.leader === 'REJECT' ? <FontAwesomeIcon icon={faTimesCircle} color="red" size="lg" />
+                : <FontAwesomeIcon icon={faTimesCircle} color="grey" size="lg" />,
+            leaderby: !request.leaderBy ? '' : request.leaderBy.username,
+            hr: request.hr === 'APPOVE' ? <FontAwesomeIcon icon={faCheckCircle} color="green" size="lg" />
+              : request.hr === 'REJECT' ? <FontAwesomeIcon icon={faTimesCircle} color="red" size="lg" />
+                : <FontAwesomeIcon icon={faTimesCircle} color="grey" size="lg" />,
+            hrby: !request.hrBy ? '' : request.hrBy.username,
+          }))}
+          title="Requset leave"
+          options={{
+            search: true,
+          }}
+          icons={{
+            Search: forwardRef((props, ref) => <Search {...props} ref={ref} />)
+          }}
 
-    const data = React.useMemo(
-        () => [
-            {
-                col1: 'Hello',
-                col2: 'World',
-            },
-            {
-                col1: 'react-table',
-                col2: 'rocks',
-            },
-            {
-                col1: 'whatever',
-                col2: 'you want',
-            },
-        ],
-        []
-    )
-    
+        />
 
-    const columns = React.useMemo(
-        () => [
-          {
-            Header: 'Name',
-            columns: [
-              {
-                Header: 'First Name',
-                accessor: 'col1',
-              },
-              {
-                Header: 'Last Name',
-                accessor: 'col2',
-              },
-            ],
-          },
-          {
-            Header: 'Info',
-            columns: [
-              {
-                Header: 'Age',
-                accessor: 'age',
-              },
-              {
-                Header: 'Visits',
-                accessor: 'visits',
-              },
-              {
-                Header: 'Status',
-                accessor: 'status',
-              },
-              {
-                Header: 'Profile Progress',
-                accessor: 'progress',
-              },
-            ],
-          },
-        ],
-        []
-      )
 
-   
-    const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        rows,
-        prepareRow,
-      } = useTable({ columns, data })
-
-    return (
-        <TableuserCSS>
-            <table {...getTableProps()}>
-                <thead>
-                    {// Loop over the header rows
-                        headerGroups.map(headerGroup => (
-                            // Apply the header row props
-                            <tr {...headerGroup.getHeaderGroupProps()}>
-                                {// Loop over the headers in each row
-                                    headerGroup.headers.map(column => (
-                                        // Apply the header cell props
-                                        <th {...column.getHeaderProps()}>
-                                            {// Render the header
-                                                column.render('Header')}
-                                        </th>
-                                    ))}
-                            </tr>
-                        ))}
-                </thead>
-                {/* Apply the table body props */}
-                <tbody {...getTableBodyProps()}>
-                    {// Loop over the table rows
-                        rows.map(row => {
-                            // Prepare the row for display
-                            prepareRow(row)
-                            return (
-                                // Apply the row props
-                                <tr {...row.getRowProps()}>
-                                    {// Loop over the rows cells
-                                        row.cells.map(cell => {
-                                            // Apply the cell props
-                                            return (
-                                                <td {...cell.getCellProps()}>
-                                                    {// Render the cell contents
-                                                        cell.render('Cell')}
-                                                </td>
-                                            )
-                                        })}
-                                </tr>
-                            )
-                        })}
-                </tbody>
-            </table>
-        </TableuserCSS>
-    )
+      </div>
+    </TableuserCSS>
+  )
 }

@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes, faBars } from '@fortawesome/free-solid-svg-icons'
 import { useSelector, useDispatch } from 'react-redux'
 import { loggeduser, getUser } from '../reducers/userReducer'
+import { User } from '../types'
 
 interface Props {
 }
@@ -25,7 +26,7 @@ const Layout: React.FC<Props> = () => {
 
     const [logout] = useMutation<{ logout: { message: string } }>(LOGOUT)
 
-    const { data } = useQuery(ME)
+    const { data } = useQuery<{me : User}>(ME)
 
     const user = useSelector(getUser)
 
@@ -33,13 +34,7 @@ const Layout: React.FC<Props> = () => {
 
     useEffect(() => {
         try {
-
-            const res = data
-
-            if (res.me) {
-                dispatch(loggeduser(res.me))
-            }
-
+                dispatch(loggeduser(data?.me))
         } catch (error) {
             console.log(error)
         }

@@ -11,9 +11,12 @@ export const Navbar = styled.div`
 nav{
     background: #34b5e2;
     padding: 5px 20px;
+    
 }
 
 ul{
+    width: 80%;
+    margin: auto;
     list-style-type: none;
 }
 

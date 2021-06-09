@@ -3,9 +3,20 @@ import FullCalendar, { formatDate } from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { ModalCSS } from '../CSScomponents/Modal'
-import { useQuery } from '@apollo/client'
-import { TYPELEAVE } from '../apollo/querys'
-import { typeleave } from '../types'
+import { useMutation, useQuery } from '@apollo/client'
+import { CALENDARLEAVE, SHOWREQUESTLEAVEME, TYPELEAVE } from '../apollo/querys'
+import { showrequestleave, typeleave } from '../types'
+import { REQUESTLEAVE } from '../apollo/mututaion'
+import { useForm } from 'react-hook-form'
+
+type FormData = {
+    typeleaveId: string
+    to: Date
+    from: Date
+    descriptionfrom: string
+    descriptionto: string
+    descriptionleave: string
+};
 
 export default function Calendar() {
 
@@ -29,6 +40,34 @@ export default function Calendar() {
 
     const { data } = useQuery<{ typeleave: typeleave[] }>(TYPELEAVE)
 
+    const showleave = useQuery(CALENDARLEAVE)
+
+    const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
+
+    const [requsetleave, { loading, error }] = useMutation(REQUESTLEAVE, { refetchQueries: [{ query: CALENDARLEAVE }, { query: SHOWREQUESTLEAVEME }] })
+ 
+    const onSubmit = handleSubmit(async ({ typeleaveId, descriptionfrom, descriptionto, descriptionleave }) => {
+        try {
+
+            const res = await requsetleave({
+                variables: {
+                    typeleaveId,
+                    to: end,
+                    from: start,
+                    descriptionfrom,
+                    descriptionto,
+                    descriptionleave
+                }
+            })
+
+            if (res) {
+                setAction('close')
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    });
+
     return (
         <>
 
@@ -37,26 +76,59 @@ export default function Calendar() {
                     <div className="modal-content">
 
                         <span className="close" onClick={CtrlOut}>&times;</span>
+                        <div className="header">
+                            Request Leave
+                        </div>
+                        <form onSubmit={onSubmit}>
+                            <div className="content">
+                                <div className="des">From</div>
+                                <div className="des">{start}</div>
+                                <div className="des">
+                                    <select {...register("descriptionfrom")} >
+                                        <option value='AllDAY'>All day</option>
+                                        <option value='HALFDAY'>Half day</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="content">
+                                <div className="des">To</div>
+                                <div className="des">{end}</div>
+                                <div className="des">
+                                    <select {...register("descriptionto")} >
+                                        <option value='AllDAY'>All day</option>
+                                        <option value='HALFDAY'>Half day</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="content">
+                                <div>Type Leave</div>
+                                <select className="Selection" {...register("typeleaveId")}>
+                                    {data && data.typeleave.map((types) => (
+                                        <option key={types.id} value={types.id}>{types.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="content">
+                                <div>Leave reason</div>
+                                <input type="text" {...register("descriptionleave", { required: true })} className="input" placeholder="please input reason" />
+                            </div>
 
-                        <div className="content">
-                            <div>From</div>
-                            <div>{start}</div>
-                        </div>
-                        <div className="content">
-                            <div>To</div>
-                            <div>{end}</div>
-                        </div>
-                        <div className="content">
-                            <div>Type Leave</div>
-                            <select className="Selection" name="type-leave" id="cars">
-                                {data && data.typeleave.map((types) => (
-                                    <option value={types.id}>{types.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="content">
-                            <button>Summit</button>
-                        </div>
+                            <div className="content">
+                                {loading ? <button disabled>Loading...</button> :
+                                    <button>Summit</button>}
+
+                            </div>
+                            {errors.descriptionleave?.type === 'required' &&
+                                <div className="error">
+                                    <p>Please input your reason</p>
+                                </div>
+                            }
+                            {error &&
+                                <div className="error">
+                                    <p>{error.graphQLErrors[0].message}</p>
+                                </div>
+                            }
+                        </form>
                     </div>
                 </div>
             </ModalCSS>
@@ -86,8 +158,8 @@ export default function Calendar() {
                     //   }
                     //   countLeave.setDate(countLeave.getDate() + 1)
                     // }
-                    setStart(start)
-                    setEnd(end)
+                    setStart(info.startStr)
+                    setEnd(info.endStr)
                     setAction('leave')
 
                 }}
@@ -131,31 +203,21 @@ export default function Calendar() {
                     return true
                 }}
 
-                events={[
+                events={showleave.data?.calendarLeave.map((show: showrequestleave) => (
+                    {
+                        title: show.typeleave.name,
+                        start: new Date(show.from),
+                        end: new Date(show.to),
+                        description: 'Leave',
+                        backgroundColor: show.typeleave.color,
+                        borderColor: show.typeleave.color,
+                        extendedProps: {
 
-                    {
-                        title: 'Sick Leave',
-                        start: '2021-05-21',
-                        end: '2021-05-21',
-                        description: 'Leave',
-                        backgroundColor: 'blue',
-                        extendedProps: {
-                            from: '2021-05-21 Allday',
-                            to: '2021-05-21 Allday'
+                            from: new Date(show.from).toLocaleDateString('en-GB') + ' ' + show.descriptionfrom,
+                            to: new Date(show.to).toLocaleDateString('en-GB') + ' ' + show.descriptionto
                         }
-                    },
-                    {
-                        title: 'Presonal Leave',
-                        start: '2021-06-01',
-                        end: '2021-06-05',
-                        description: 'Leave',
-                        backgroundColor: 'green',
-                        extendedProps: {
-                            from: '2021-06-01 Allday',
-                            to: '2021-06-02 13:00 - 17.30'
-                        }
-                    },
-                ]}
+                    }
+                ))}
                 eventClick={(info) => {
                     var eventObj = info.event;
                     if (eventObj.extendedProps.description === 'Leave') {
@@ -169,3 +231,13 @@ export default function Calendar() {
         </>
     )
 }
+
+// title: 'Presonal Leave',
+//                         start: '2021-06-10',
+//                         end: '2021-06-11',
+//                         description: 'Leave',
+//                         backgroundColor: 'green',
+//                         extendedProps: {
+//                             from: '2021-06-01 Allday',
+//                             to: '2021-06-02 13:00 - 17.30'
+//                         }

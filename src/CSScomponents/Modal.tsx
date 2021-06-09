@@ -3,7 +3,7 @@ import styled from 'styled-components'
 export const ModalCSS = styled.div`
 .modal {
     position: fixed; /* Stay in place */
-    z-index: 2; /* Sit on top */
+    z-index: 11; /* Sit on top */
     padding-top: 100px; /* Location of the box */
     left: 0;
     top: 0;
@@ -38,6 +38,12 @@ export const ModalCSS = styled.div`
     width: 50%;
   }
 
+  .header{
+    font-size: 26px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
   .modal-content .content button{
     width: 50%;
     color: white;
@@ -55,8 +61,26 @@ export const ModalCSS = styled.div`
     background-color: #4eb7d9;
   }
   
+  .modal-content .content .des{
+    width: 33%;
+  }
+
+  .modal-content .content .des select{
+    width: 100%;
+  }
+
   .modal-content .content div{
-    width: 50%
+    width: 50%;
+  }
+  .modal-content .content .input{
+    width: 50%;
+    padding: 5px;
+
+  }
+
+  .modal-content .error{
+    color: red;
+    text-align: center;
   }
 
   /* The Close Button */

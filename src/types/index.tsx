@@ -23,6 +23,7 @@ export interface typeleave {
     id: string
     name: string
     max: number
+    color: string
 }
 
 export interface Leaveremain {
@@ -31,7 +32,7 @@ export interface Leaveremain {
     count: number
 }
 
-export interface showrequiedleave {
+export interface showrequestleave {
     id: string
     from : Date
     to: Date
@@ -42,6 +43,8 @@ export interface showrequiedleave {
     leaderBy: User
     hr: string
     hrBy: User
+    createAt: Date
+    typeleave : typeleave
 }
 
 export type SigninArgs = Pick<User,'username'> & {password: string}
