@@ -51,6 +51,45 @@ export class leaveresolver {
     }
 
     @Query(() => [RequsetLeave], { nullable: 'items' })
+    async showrequiedleaveMe(
+        @Ctx() { req }: AppContext
+    ): Promise<RequsetLeave[] | null> {
+        try {
+            const user = await isAuth(req)
+
+            if (!user) throw Error("You must Login")
+
+            const leave = await RequsetLeaveModel.find({ 'user': Object(user.id) })
+            .populate({path:'leaderBy'}).populate({path:'hrBy'})
+
+            return leave
+
+        } catch (error) {
+            throw error
+        }
+    }
+
+    @Query(() => [RequsetLeave], { nullable: 'items' })
+    async calendarLeave(
+        @Ctx() { req }: AppContext
+    ): Promise<RequsetLeave[] | null> {
+        try {
+            const user = await isAuth(req)
+
+            if (!user) throw Error("You must Login")
+
+            const showleave = await RequsetLeaveModel.find({ 'user': Object(user.id),
+            'leader': StatusOption.appove ,'hr': StatusOption.appove})
+            .populate({path:'leaderBy'}).populate({path:'hrBy'}).populate({path: 'typeleave'})
+
+            return showleave
+
+        } catch (error) {
+            throw error
+        }
+    }
+
+    @Query(() => [RequsetLeave], { nullable: 'items' })
     async showrequiedleave(
         @Ctx() { req }: AppContext
     ): Promise<RequsetLeave[] | null> {
@@ -83,8 +122,6 @@ export class leaveresolver {
                 return null
             }
 
-
-
         } catch (error) {
             throw error
         }
@@ -95,6 +132,7 @@ export class leaveresolver {
     async addtypeleave(
         @Arg('name') name: string,
         @Arg('max') max: number,
+        @Arg('color') color: string,
         @Ctx() { req }: AppContext
     ): Promise<ResMessage | null> {
         try {
@@ -108,7 +146,8 @@ export class leaveresolver {
 
             const newType = await TypeleaveModel.create({
                 name,
-                max
+                max,
+                color
             })
 
             await newType.save()
@@ -123,6 +162,7 @@ export class leaveresolver {
     async updatetypeleave(
         @Arg('name') name: string,
         @Arg('max') max: number,
+        @Arg('color') color: string,
         @Arg('id') id: string,
         @Ctx() { req }: AppContext
     ): Promise<Typeleave | null> {
@@ -139,6 +179,8 @@ export class leaveresolver {
 
                 check_id.max = max
 
+                check_id.color = color
+
                 await check_id.save()
 
                 return check_id
@@ -151,6 +193,8 @@ export class leaveresolver {
                 check_id.name = name
 
                 check_id.max = max
+
+                check_id.color = color
 
                 await check_id.save()
 
@@ -357,7 +401,7 @@ export class leaveresolver {
                     "user": check_leave.user
                 })
 
-                if(!leave) throw Error("someting went wrong!!!")
+                if (!leave) throw Error("someting went wrong!!!")
 
                 leave.count = leave.count + Different
 
@@ -399,7 +443,7 @@ export class leaveresolver {
 
             if (!check_leave) throw Error("Not Found")
 
-            if(check_leave.leader === StatusOption.panding) throw Error ("You can't Appove.")
+            if (check_leave.leader === StatusOption.panding) throw Error("You can't Appove.")
 
             if (check_leave.hr.includes(StatusOption.appove) || check_leave.hr.includes(StatusOption.reject)) throw Error("You can't submit again")
 
@@ -411,7 +455,7 @@ export class leaveresolver {
                     "user": check_leave.user
                 })
 
-                if(!leave) throw Error("someting went wrong!!!")
+                if (!leave) throw Error("someting went wrong!!!")
 
                 leave.count = leave.count + Different
 

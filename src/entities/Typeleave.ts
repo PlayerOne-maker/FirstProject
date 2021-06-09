@@ -16,6 +16,10 @@ export class Typeleave{
     max: number
 
     @Field()
+    @Prop({required:true})
+    color: string
+
+    @Field()
     @Prop({default: Date.now() + 60 * 60 * 1000 * 7 })
     createAt: Date
 }

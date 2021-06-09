@@ -26,7 +26,7 @@ type Leave {
 
 type Mutation {
   addleave(count: Float!, typeleaveId: String!, userId: String!): Leave
-  addtypeleave(max: Float!, name: String!): ResMessage
+  addtypeleave(color: String!, max: Float!, name: String!): ResMessage
   createDepartment(name: String!): Departments
   createUser(departmentId: String!, email: String!, firstname: String!, lastname: String!, level: String!, password: String!, username: String!): User
   deleteDepartment(departmentId: String!): ResMessage
@@ -43,14 +43,16 @@ type Mutation {
   updateDepartment(departmentId: String!, name: String!): Departments
   updateRole(newRole: [String!]!, userId: String!): User
   updateUser(departmentId: String!, email: String!, fisrtname: String!, lastname: String!, level: String!, userId: String!, username: String!): User
-  updatetypeleave(id: String!, max: Float!, name: String!): Typeleave
+  updatetypeleave(color: String!, id: String!, max: Float!, name: String!): Typeleave
 }
 
 type Query {
+  calendarLeave: [RequsetLeave]!
   departments: [Departments]!
   me: User
   showleaveremain: [Leave]!
   showrequiedleave: [RequsetLeave]!
+  showrequiedleaveMe: [RequsetLeave]!
   typeleave: [Typeleave]!
   users: [User]!
 }
@@ -78,6 +80,7 @@ type ResMessage {
 
 """TypeLeave"""
 type Typeleave {
+  color: String!
   createAt: DateTime!
   id: ID!
   max: Float!
