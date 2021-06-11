@@ -10,7 +10,7 @@ import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 
 export default function Tableuser() {
 
-  const { data } = useQuery(SHOWREQUESTLEAVEME)
+  const { data } = useQuery(SHOWREQUESTLEAVEME,{fetchPolicy:"network-only"})
 
 
   return (

@@ -25,6 +25,7 @@ query{
   {
     id
     typeleave{
+      id
       name
     }
     count

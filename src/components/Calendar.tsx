@@ -4,19 +4,20 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { ModalCSS } from '../CSScomponents/Modal'
 import { useMutation, useQuery } from '@apollo/client'
-import { CALENDARLEAVE, SHOWREQUESTLEAVEME, TYPELEAVE } from '../apollo/querys'
-import { showrequestleave, typeleave } from '../types'
+import { CALENDARLEAVE, SHOWLEAVEREMAIN, SHOWREQUESTLEAVEME } from '../apollo/querys'
+import { Leaveremain, showrequestleave } from '../types'
 import { REQUESTLEAVE } from '../apollo/mututaion'
 import { useForm } from 'react-hook-form'
 
 type FormData = {
     typeleaveId: string
-    to: Date
-    from: Date
     descriptionfrom: string
     descriptionto: string
     descriptionleave: string
+    to: string
+    from: string
 };
+
 
 export default function Calendar() {
 
@@ -24,9 +25,9 @@ export default function Calendar() {
 
     const [action, setAction] = useState<typeAction>('close')
 
-    const [start, setStart] = useState("")
+    const [start, setStart] = useState<Date>(new Date())
 
-    const [end, setEnd] = useState("")
+    const [end, setEnd] = useState<Date>(new Date())
 
     const CtrlOut = () => {
         setAction('close')
@@ -38,25 +39,25 @@ export default function Calendar() {
         }
     }
 
-    const { data } = useQuery<{ typeleave: typeleave[] }>(TYPELEAVE)
+    const { data } = useQuery<{ showleaveremain: Leaveremain[] }>(SHOWLEAVEREMAIN)
 
     const showleave = useQuery(CALENDARLEAVE)
 
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
 
-    const [requsetleave, { loading, error }] = useMutation(REQUESTLEAVE, { refetchQueries: [{ query: CALENDARLEAVE }, { query: SHOWREQUESTLEAVEME }] })
- 
-    const onSubmit = handleSubmit(async ({ typeleaveId, descriptionfrom, descriptionto, descriptionleave }) => {
-        try {
+    const [requestleave, { loading, error }] = useMutation(REQUESTLEAVE,{refetchQueries:[{query: SHOWREQUESTLEAVEME},{query:SHOWLEAVEREMAIN}]})
 
-            const res = await requsetleave({
+    const onSubmit = handleSubmit(async ({ typeleaveId, descriptionfrom, descriptionto, descriptionleave, from }) => {
+        try {
+            console.log(from)
+            const res = await requestleave({
                 variables: {
                     typeleaveId,
-                    to: end,
-                    from: start,
                     descriptionfrom,
                     descriptionto,
-                    descriptionleave
+                    descriptionleave,
+                    from: start.toString(),
+                    to: end.toString()
                 }
             })
 
@@ -82,7 +83,10 @@ export default function Calendar() {
                         <form onSubmit={onSubmit}>
                             <div className="content">
                                 <div className="des">From</div>
-                                <div className="des">{start}</div>
+                                <div className="des">
+                                    <input {...register("from")} type="hidden" value={start.toString()} />
+                                    {start.toLocaleDateString('en-GB')}
+                                </div>
                                 <div className="des">
                                     <select {...register("descriptionfrom")} >
                                         <option value='AllDAY'>All day</option>
@@ -92,7 +96,7 @@ export default function Calendar() {
                             </div>
                             <div className="content">
                                 <div className="des">To</div>
-                                <div className="des">{end}</div>
+                                <div className="des">{end?.toLocaleDateString('en-GB')}</div>
                                 <div className="des">
                                     <select {...register("descriptionto")} >
                                         <option value='AllDAY'>All day</option>
@@ -102,9 +106,10 @@ export default function Calendar() {
                             </div>
                             <div className="content">
                                 <div>Type Leave</div>
-                                <select className="Selection" {...register("typeleaveId")}>
-                                    {data && data.typeleave.map((types) => (
-                                        <option key={types.id} value={types.id}>{types.name}</option>
+                                <select className="Selection"{...register("typeleaveId", { required: true })}>
+                                    <option value="" hidden>Choose a Types</option>
+                                    {data && data.showleaveremain.map((types) => (
+                                        <option key={types.typeleave.id} value={types.typeleave.id}>{types.typeleave.name}</option>
                                     ))}
                                 </select>
                             </div>
@@ -118,14 +123,18 @@ export default function Calendar() {
                                     <button>Summit</button>}
 
                             </div>
-                            {errors.descriptionleave?.type === 'required' &&
+
+                            {errors.typeleaveId?.type === "required" ?
                                 <div className="error">
-                                    <p>Please input your reason</p>
+                                    <p>Please select typeleave</p>
                                 </div>
-                            }
+                                : errors.descriptionleave?.type === "required" &&
+                                <div className="error">
+                                    <p>Please input you reason</p>
+                                </div>}
                             {error &&
                                 <div className="error">
-                                    <p>{error.graphQLErrors[0].message}</p>
+                                    {error.graphQLErrors[0].message}
                                 </div>
                             }
                         </form>
@@ -143,10 +152,6 @@ export default function Calendar() {
                     var endDay = info.end
                     endDay.setDate(endDay.getDate() - 1)
 
-                    var start = new Intl.DateTimeFormat('en-GB').format(info.start);
-
-                    var end = new Intl.DateTimeFormat('en-GB').format(endDay);
-
                     // var totelCount = 3
 
                     // var countLeave = new Date(info.start)
@@ -158,8 +163,11 @@ export default function Calendar() {
                     //   }
                     //   countLeave.setDate(countLeave.getDate() + 1)
                     // }
-                    setStart(info.startStr)
-                    setEnd(info.endStr)
+
+
+
+                    setStart(info.start)
+                    setEnd(info.end)
                     setAction('leave')
 
                 }}

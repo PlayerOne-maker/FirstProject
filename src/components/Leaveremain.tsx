@@ -5,7 +5,7 @@ import {SHOWLEAVEREMAIN} from '../apollo/querys'
 
 export default function Remain() {
 
-    const { data } = useQuery<{ showleaveremain: Leaveremain[] }>(SHOWLEAVEREMAIN, { fetchPolicy: "no-cache" })
+    const { data } = useQuery<{ showleaveremain: Leaveremain[] }>(SHOWLEAVEREMAIN,{fetchPolicy:"network-only"})
 
     return (
         <div>
