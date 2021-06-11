@@ -5,13 +5,13 @@ import { Typeleave } from './Typeleave'
 import { StatusOption } from '../types'
 
 @ObjectType({description:"RequsetLeave"})
-export class RequsetLeave{
+export class RequestLeave{
     @Field(() => ID)
     id: string
 
     @Field()
     @prop({require: true})
-    from: Date
+    from: String
 
     @Field()
     @prop({require: true})
@@ -19,7 +19,7 @@ export class RequsetLeave{
 
     @Field()
     @prop({require: true})
-    to: Date
+    to: String
 
     @Field()
     @prop({require: true})
@@ -71,4 +71,4 @@ export class RequsetLeave{
     createAt: Date
 }
 
-export const RequsetLeaveModel = getModelForClass(RequsetLeave)
+export const RequestLeaveModel = getModelForClass(RequestLeave)

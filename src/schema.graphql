@@ -35,11 +35,9 @@ type Mutation {
   deletetypeleave(id: String!): ResMessage
   login(password: String!, username: String!): User
   logout: ResMessage
-  requestleave(descriptionfrom: String!, descriptionleave: String!, descriptionto: String!, from: DateTime!, to: DateTime!, typeleaveId: String!): RequsetLeave
+  requestleave(descriptionfrom: String!, descriptionleave: String!, descriptionto: String!, from: String!, to: String!, typeleaveId: String!): ResMessage
   requestresetpassword(email: String!): ResMessage
   resetpassword(password: String!, token: String!): ResMessage
-  submitleaveByhr(Status: String!, id: String!): RequsetLeave
-  submitleaveByleader(Status: String!, id: String!): RequsetLeave
   updateDepartment(departmentId: String!, name: String!): Departments
   updateRole(newRole: [String!]!, userId: String!): User
   updateUser(departmentId: String!, email: String!, fisrtname: String!, lastname: String!, level: String!, userId: String!, username: String!): User
@@ -47,29 +45,29 @@ type Mutation {
 }
 
 type Query {
-  calendarLeave: [RequsetLeave]!
+  calendarLeave: [RequestLeave]!
   departments: [Departments]!
   me: User
   showleaveremain: [Leave]!
-  showrequiedleave: [RequsetLeave]!
-  showrequiedleaveMe: [RequsetLeave]!
+  showrequiedleave: [RequestLeave]!
+  showrequiedleaveMe: [RequestLeave]!
   typeleave: [Typeleave]!
   users: [User]!
 }
 
 """RequsetLeave"""
-type RequsetLeave {
+type RequestLeave {
   createAt: DateTime!
   descriptionfrom: String!
   descriptionleave: String!
   descriptionto: String!
-  from: DateTime!
+  from: String!
   hr: String!
   hrBy: User
   id: ID!
   leader: String!
   leaderBy: User
-  to: DateTime!
+  to: String!
   typeleave: Typeleave!
   user: User!
 }
